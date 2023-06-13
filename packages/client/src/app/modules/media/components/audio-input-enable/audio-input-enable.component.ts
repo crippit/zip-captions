@@ -13,6 +13,7 @@ import { MediaService } from '../../services/media.service';
 })
 export class AudioInputEnableComponent {
   @ViewChild('errorIcon', {read: ElementRef}) errorIcon!: ElementRef;
+  @Input() small?: Signal<boolean | undefined>;
   public streamState: Signal<AudioStreamState>;
   public vol: Signal<number | undefined>;
   public connected: Signal<boolean | undefined>;

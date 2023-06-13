@@ -1,6 +1,6 @@
-<div class="bg-base-300 gap-3 flex flex-row items-center p-2" [@growshrink]="isActive()">
+<div class="bg-base-300 gap-3 flex flex-row items-center p-2" [@growshrink]="animationState()" (mouseenter)="toggleHeaderCollapsed(false)" (mouseleave)="toggleHeaderCollapsed(true)">
   <div class="flex">
-    <ng-icon name="zipCaptionsLogo" [size]="isActive() ? '24' : '48'"></ng-icon>
+    <ng-icon name="zipCaptionsLogo" [size]="animationState() ? '24' : '48'"></ng-icon>
   </div>
   <div class="flex-1">
     <div class="normal-case text-xl" *ngIf="!isActive(); else smallTitle">ZipCaptions</div>
@@ -9,8 +9,8 @@
     </ng-template>
   </div>
   <ng-container *ngIf="activeRoute() === '/'" [ngSwitch]="showRecordButton()">
-    <app-audio-input-enable *ngSwitchCase="true"></app-audio-input-enable>
-    <app-recognition-enable *ngSwitchCase="false"></app-recognition-enable>
+    <app-audio-input-enable *ngSwitchCase="true" [small]="animationState"></app-audio-input-enable>
+    <app-recognition-enable *ngSwitchCase="false" [small]="animationState"></app-recognition-enable>
   </ng-container>
   <details #menu class="flex-none dropdown dropdown-end z-10" *ngIf="!isActive()">
     <summary class="m-1 btn btn-circle btn-ghost text-2xl" role="button" aria-label="Menu">

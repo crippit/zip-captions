@@ -1,28 +1,33 @@
-import { Component, ElementRef, OnDestroy, OnInit, Renderer2, Signal, ViewChild, WritableSignal, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, Renderer2, Signal, ViewChild, WritableSignal, computed, signal } from '@angular/core';
 import { NavigationEnd, NavigationStart, Route, Router } from '@angular/router';
 
+import { animate, animateChild, query, style, transition, trigger } from '@angular/animations';
 import { Platform } from '@angular/cdk/platform';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Store, select } from '@ngrx/store';
+import { collapseHorizontallyAnimation } from 'angular-animations';
 import { Subject, filter, map, takeUntil } from 'rxjs';
 import { AppState } from '../../models/app.model';
 import { RecognitionStatus } from '../../models/recognition.model';
 import { recognitionStatusSelector } from '../../selectors/recognition.selector';
 import { MenuItem } from './header.model';
-import { animate, style, transition, trigger } from '@angular/animations';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   animations: [
     trigger('growshrink', [
-      transition('true => false', [style({ height: '{{startHeight}}px', opacity: 0 }), animate('.5s ease')], {
-        params: { startHeight: 24 }
+      transition('true => false', [style({ height: '{{startHeight}}px' }), animate('.5s ease'), animateChild()], {
+        params: { startHeight: 24 }, 
       }),
-      transition('false => true', [style({ height: '{{startHeight}}px', opacity: 0 }), animate('.5s ease')], {
+      transition('false => true', [style({ height: '{{startHeight}}px' }), animate('.5s ease'), animateChild()], {
         params: { startHeight: 72 }
-      })
-    ])
+      }),
+      transition('* => *', [
+        query('*', [animateChild()])
+      ])
+    ]),
+    collapseHorizontallyAnimation()
   ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
@@ -31,6 +36,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public activeRoute: WritableSignal<string>;
   public showRecordButton: WritableSignal<boolean> = signal(true);
   public isActive: Signal<boolean | undefined>;
+  public headerAnimated: WritableSignal<boolean> = signal(true);
+  public animationState: Signal<boolean>;
 
   private onDestroy$: Subject<void> = new Subject<void>();
 
@@ -42,23 +49,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isActive = toSignal(this.store.pipe(
       select(recognitionStatusSelector),
       map((status: RecognitionStatus) => status === RecognitionStatus.connected)
-    ))
+    ));
 
     this.activeRoute = signal(this.router.url);
+    
     this.router.events.pipe(
       filter((ev) => ev instanceof NavigationStart),
       takeUntil(this.onDestroy$)
     ).subscribe((ev) => {
-      console.log('close nav menu', this.menuElement)
       this.renderer.removeAttribute(this.menuElement.nativeElement, 'open')
-      // TODO: Close nav menu
-    })
+    });
+
     this.menuItems = this.router.config.map((route: Route) => {
       return {
         label: route.data?.['name'] || route.path,
         routerOutlet: `/${route.path}`
       }
-    })
+    });
+
+    this.animationState = computed(() => this.isActive() && this.headerAnimated() ? true : false)
   }
 
   ngOnInit(): void {
@@ -74,6 +83,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.onDestroy$.next();
+  }
+
+  public toggleHeaderCollapsed(isCollapsed: boolean): void {
+    console.log('toggleHeaderCollapsed', isCollapsed)
+    this.headerAnimated.set(isCollapsed);
   }
 
   private _checkPlatform(): void {

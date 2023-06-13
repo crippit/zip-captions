@@ -1,4 +1,4 @@
-import { Component, Signal } from '@angular/core';
+import { Component, Input, Signal } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../../models/app.model';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -12,6 +12,7 @@ import { map, tap } from 'rxjs';
   styleUrls: ['./recognition-enable.component.scss'],
 })
 export class RecognitionEnableComponent {
+  @Input() small?: Signal<boolean | undefined>
   public connected: Signal<boolean | undefined>;
   public disconnected: Signal<boolean | undefined>;
   public error: Signal<string | undefined>;
