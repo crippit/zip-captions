@@ -1,0 +1,25 @@
+<div class="flex flex-row items-center gap-3">
+  <div class="text-lg text-primary py-3" translate>CONNECTIONS.zoom</div>
+  <!-- <div class="badge h-auto badge-error" *ngIf="error() as err">{{err}}</div> -->
+  
+</div>
+
+<form class="flex flex-row flex-wrap flex-grow-0 gap-3" [formGroup]="formGroup" (submit)="saveZoomToken()">
+  
+  <div class="form-control basis-1/2">
+    <label class="label">
+      <span class="label-text" [ngClass]="{'text-error': formGroup.invalid && formGroup.touched}" translate>CONNECTIONS.zoomApiToken</span>
+    </label>
+    <input type="text" class="input input-bordered input-lg" [ngClass]="{'input-error': formGroup.invalid && formGroup.touched}" [placeholder]="'CONNECTIONS.zoomApiToken' | translate" formControlName="apiToken" />
+    <label class="label no-height">
+      <span class="label-alt-text text-error text-xs" *ngIf="formGroup.controls['apiToken'].hasError('invalid') && formGroup.touched">Invalid Api Token</span>
+      <span class="label-alt-text text-error text-xs" *ngIf="formGroup.controls['apiToken'].hasError('required') && formGroup.touched">Required</span>
+    </label>
+  </div>
+
+  <div class="flex flex-row basis-auto self-end pb-5 gap-3">
+    <button class="btn btn-secondary" [ngClass]="{'btn-error': formGroup.invalid && formGroup.touched}" [disabled]="isConnected()" translate>BUTTONS.connect</button>
+    <button class="btn btn-secondary" [disabled]="!isConnected()" type="button" (click)="disconnect()" translate>BUTTONS.disconnect</button>
+  </div>
+
+</form>

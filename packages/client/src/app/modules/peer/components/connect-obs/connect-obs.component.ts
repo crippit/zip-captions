@@ -1,14 +1,13 @@
-import { Component, Signal, computed, effect } from '@angular/core';
+import { Component, Signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { filter, take } from 'rxjs';
 import { ObsActions } from '../../../../actions/obs.actions';
 import { AppState } from '../../../../models/app.model';
 import { RecognitionActions } from '../../../../models/recognition.model';
 import { ObsConnectionState } from '../../../../reducers/obs.reducer';
 import { selectObsConnected, selectObsError, selectObsStreamActive } from '../../../../selectors/obs.selectors';
-import { recognitionActiveSelector } from '../../../../selectors/recognition.selector';
-import { filter, take, tap } from 'rxjs';
 
 @Component({
   selector: 'app-connect-obs',
