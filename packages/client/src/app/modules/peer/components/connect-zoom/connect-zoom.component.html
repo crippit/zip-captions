@@ -4,15 +4,15 @@
   
 </div>
 
-<form class="flex flex-row flex-wrap flex-grow-0 gap-3" [formGroup]="formGroup" (submit)="saveZoomToken()">
+<form class="flex flex-row flex-wrap flex-grow-0 gap-3 justify-between" [formGroup]="formGroup" (submit)="saveZoomToken()">
   
-  <div class="form-control basis-1/2">
+  <div class="form-control basis-2/3">
     <label class="label">
       <span class="label-text" [ngClass]="{'text-error': formGroup.invalid && formGroup.touched}" translate>CONNECTIONS.zoomApiToken</span>
     </label>
     <input type="text" class="input input-bordered input-lg" [ngClass]="{'input-error': formGroup.invalid && formGroup.touched}" [placeholder]="'CONNECTIONS.zoomApiToken' | translate" formControlName="apiToken" />
     <label class="label no-height">
-      <span class="label-alt-text text-error text-xs" *ngIf="formGroup.controls['apiToken'].hasError('invalid') && formGroup.touched">Invalid Api Token</span>
+      <span class="label-alt-text text-error text-xs" *ngIf="formGroup.controls['apiToken'].hasError('pattern') && formGroup.touched">Invalid Api Token</span>
       <span class="label-alt-text text-error text-xs" *ngIf="formGroup.controls['apiToken'].hasError('required') && formGroup.touched">Required</span>
     </label>
   </div>

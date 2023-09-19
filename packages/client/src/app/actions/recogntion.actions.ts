@@ -16,5 +16,7 @@ export const connectRecognitionFailure = createAction('[Recognition] Connect fai
 export const disconnectRecognitionSuccess = createAction('[Recognition] Disconnect success');
 export const disconnectRecognitionFailure = createAction('[Recognition] Disconnect failure', props<{error: string}>());
 
-export const resetRecogntionState = createAction('[Recognition] Reset state')
+export const resetRecogntionState = createAction('[Recognition] Reset state');
 
+export const saveZoomToken = createAction('[Recognition] Save Zoom Token', props<{apiToken: string}>());
+export const clearZoomToken = createAction('[Recognition] Clear Zoom Token');

@@ -1,4 +1,4 @@
-import { Injectable, Signal, WritableSignal, signal } from '@angular/core';
+import { Injectable, Signal, WritableSignal, effect, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 import { Subject, auditTime, debounceTime, takeUntil, tap, throttleTime } from 'rxjs';
@@ -9,6 +9,8 @@ import { platformSelector } from '../../../selectors/app.selector';
 import { languageSelector } from '../../../selectors/settings.selector';
 import { Language } from '../../settings/models/settings.model';
 import { getWorker } from '../../../services/worker.util';
+import { ZoomConnectionService } from '../../../services/zoom-connection/zoom-connection.service';
+import { zoomTokenSelector } from '../../../selectors/recognition.selector';
 // TODO: Fix missing definitions once https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1560 is resolved
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -27,14 +29,19 @@ export class RecognitionService {
   private readonly MAX_RECOGNITION_LENGTH = 15;
   private historyWorker: Worker;
   private language: Signal<Language>;
+  private zoomToken: Signal<string | undefined>;
 
-  constructor(private store: Store<AppState>) {
+  constructor(private store: Store<AppState>,
+              private zoom: ZoomConnectionService) {
     this.historyWorker = getWorker();
     this.historyWorker.addEventListener('message', ({data}) => {
       // console.log(data);
     })
     this.language = toSignal(this.store.select(languageSelector)) as Signal<Language>;
     this.platform = toSignal(this.store.select(platformSelector));
+    this.zoomToken = toSignal(this.store.select(zoomTokenSelector));
+
+    effect(() => this.zoom.setApiToken(this.zoomToken()))
   }
 
   public connectToStream(streamId: string): void {
@@ -212,6 +219,9 @@ export class RecognitionService {
         }
       }
       liveOutput.set(transcript);
+      if (this.zoomToken()) {
+        this.zoom.sendPayload(transcript);
+      }
     });
 
     recognition.addEventListener('end', (e) => {

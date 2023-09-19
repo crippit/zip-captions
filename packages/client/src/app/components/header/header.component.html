@@ -22,15 +22,13 @@
     </button>
   </ng-container>
 
-  <ng-container *ngIf="isBroadcasting(); else checkForInstall">
+  <app-zoom-token-state *ngIf="showZoomState()"></app-zoom-token-state>
+
+  <ng-container *ngIf="isBroadcasting()">
     <div class="flex flex-auto flex-row justify-center">
       <span class="sm:text-xl md:text-2xl text-center" translate>HINTS.viewStream</span>
     </div>
   </ng-container>
-
-  <ng-template #checkForInstall>
-    <app-detect-pwa-install></app-detect-pwa-install>
-  </ng-template>
 
   <!-- Nav menu -->
   <details #menu class="dropdown dropdown-end z-10" *ngIf="!isActive()">

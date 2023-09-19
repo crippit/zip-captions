@@ -9,7 +9,7 @@ import { AppPlatform, AppState } from '../../models/app.model';
 import { RecognitionStatus } from '../../models/recognition.model';
 import { platformSelector } from '../../selectors/app.selector';
 import { selectIsBroadcasting } from '../../selectors/peer.selectors';
-import { recognitionStatusSelector } from '../../selectors/recognition.selector';
+import { recognitionStatusSelector, zoomTokenSelector } from '../../selectors/recognition.selector';
 import { MenuItem } from './header.model';
 @Component({
   selector: 'app-header',
@@ -33,6 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public showRecordButton: Signal<boolean | undefined>;
   public isActive: Signal<boolean | undefined>;
   public isBroadcasting: Signal<boolean | undefined>;
+  public showZoomState: Signal<boolean | undefined>;
   
   private onDestroy$: Subject<void> = new Subject<void>();
 
@@ -46,6 +47,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     ));
 
     this.isBroadcasting = toSignal(this.store.select(selectIsBroadcasting));
+
+    this.showZoomState = toSignal(this.store.pipe(select(zoomTokenSelector), map((tok) => !!tok)))
 
     this.activeRoute = signal(this.router.url);
     this.router.events.pipe(
