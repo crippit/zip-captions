@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MonoTypeOperatorFunction, Observable, pipe, retry, timer } from 'rxjs';
+import { MonoTypeOperatorFunction, Observable, firstValueFrom, from, pipe, retry, timer } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +36,9 @@ export class ZoomConnectionService {
     }
     const urlParts = this.apiToken.split('?');
     const url = `${urlParts[0]}/seq?${urlParts[1]}`;
-    this.http.get<string>(url, { headers: { mode: 'no-cors' }}).pipe(this._expBackoff(3,100)).subscribe((result) => {
-      console.log('get seq result', result);
+
+    this.http.get(url, { headers: { 'content-type': 'text/plain'}}).pipe(this._expBackoff(3,100)).subscribe((result) => {
+      console.log('httpclient get seq result', result);
     })
   }
 
