@@ -163,6 +163,7 @@ export class RecognitionService {
         .map((alternative) => alternative.transcript)
         .join('')
         .trim();
+
         if (partialTranscript !== '') {
           recognizedText.update((current: string[]) => {
             current.push(partialTranscript);
@@ -171,6 +172,9 @@ export class RecognitionService {
           });
           transcript = '';
           liveOutput.set('');
+          if (this.zoomToken()) {
+            this.zoom.sendPayload(partialTranscript);
+          }
           debounce$.next();
         }
       }
@@ -219,9 +223,6 @@ export class RecognitionService {
         }
       }
       liveOutput.set(transcript);
-      if (this.zoomToken()) {
-        this.zoom.sendPayload(transcript);
-      }
     });
 
     recognition.addEventListener('end', (e) => {

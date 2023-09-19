@@ -21,13 +21,15 @@ export class ZoomConnectionService {
     }
   }
 
-  sendPayload(text: string): Observable<any> {
+  sendPayload(text: string): void {
     if (!this.apiToken) {
       throw new Error('No Zoom API token defined');
     }
     const url = `${this.apiToken}&seq=${this.seq++}`
     
-    return this.http.post(url, text, { headers: { 'content-type': 'text/plain' } }).pipe(this._expBackoff(3, 100))
+    this.http.post(url, text, { headers: { 'content-type': 'text/plain', 'mode': 'no-cors' } }).pipe(this._expBackoff(3, 100)).subscribe((result) => {
+      console.log('send caption result',  result);
+    })
   }
 
   private _setSeq(): void {
