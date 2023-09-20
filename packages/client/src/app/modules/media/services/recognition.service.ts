@@ -172,9 +172,6 @@ export class RecognitionService {
           });
           transcript = '';
           liveOutput.set('');
-          if (this.zoomToken()) {
-            this.zoom.sendPayload(partialTranscript);
-          }
           debounce$.next();
         }
       }
@@ -200,7 +197,7 @@ export class RecognitionService {
     })
 
     recognition.addEventListener('result', (e: any) => {
-      // console.log('result')
+      console.log('result', e)
       debounce$.next();
       if (this.platform() === AppPlatform.desktop) {
         mostRecentResults = Array.from(e.results);
@@ -220,6 +217,13 @@ export class RecognitionService {
         mostRecentResults = [lastResult];
         if (lastResult[0].transcript.length) {
           transcript = lastResult[0].transcript
+        }
+      }
+      if (this.zoomToken()) {
+        const lastResult = e.results.item(e.results.length - 1);
+        console.log('result', lastResult);
+        if (lastResult[0].transcript.length && lastResult.isFinal) {
+          this.zoom.sendPayload(lastResult[0].transcript);
         }
       }
       liveOutput.set(transcript);

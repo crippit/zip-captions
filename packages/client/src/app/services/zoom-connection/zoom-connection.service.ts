@@ -27,7 +27,7 @@ export class ZoomConnectionService {
     }
     const url = `${this.apiToken}&seq=${this.seq++}`
     
-    this.http.post(url, text, { headers: { 'content-type': 'text/plain', 'mode': 'no-cors' } }).pipe(this._expBackoff(3, 100)).subscribe((result) => {
+    from(fetch(url, { method: 'POST', body: text, mode: 'no-cors', credentials: 'omit', headers: { 'content-type': 'text/plain' } })).pipe(this._expBackoff(3, 100)).subscribe((result) => {
       console.log('send caption result',  result);
     })
   }
@@ -39,7 +39,11 @@ export class ZoomConnectionService {
     const urlParts = this.apiToken.split('?');
     const url = `${urlParts[0]}/seq?${urlParts[1]}`;
 
-    this.http.get(url, { headers: { 'content-type': 'text/plain'}}).pipe(this._expBackoff(3,100)).subscribe((result) => {
+    this.http.get(url, { withCredentials: false }).subscribe((result) => {
+      console.log('httpclient seq result', result);
+    })
+
+    from(fetch(url, { method: 'get', mode: 'no-cors' })).pipe(this._expBackoff(3,100)).subscribe((result) => {
       console.log('httpclient get seq result', result);
     })
   }
